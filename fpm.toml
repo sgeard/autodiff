@@ -2,7 +2,7 @@ name = "avd"
 version = "0.1.0"
 license = "license"
 author = "sgeard"
-maintainer = "sgeard@gmail.com"
+maintainer = "geardsj@gmail.com"
 copyright = "Copyright 2020, sgeard"
 
 [build]
