@@ -16,10 +16,10 @@ program utest
         ref = T1(0.5*sin(1.0),cos(1.0)) !,-2*sin(1.0d0)) !,-4*cos(1.0d0),8*sin(1.0d0))
         call testResult_av1('T1 => sin(x)*cos(x)',ref,w)
 
-        u = 0.5*sin(2*a)
+        u = 0.5d0*sin(2.0d0*a)
         call testResult_av1('T1 => 0.5*sin(2x)',ref,u)
 
-        s = 0.5
+        s = 0.5d0
         w = s**3 + s
         ref = T1(0.5**3+0.5,3*0.5**2 + 1) !,6*0.5) !, 6, 0)
         call testResult_av1('T1 => x**3 + x',ref,w)
@@ -38,10 +38,10 @@ program utest
         ref = T2(0.5*sin(1.0),cos(1.0),-2*sin(1.0)) !,-4*cos(1.0d0),8*sin(1.0d0))
         call testResult_av2('T2 => sin(x)*cos(x)',ref,w)
 
-        u = 0.5*sin(2*a)
+        u = 0.5d0*sin(2.0d0*a)
         call testResult_av2('T2 => 0.5*sin(2x)',ref,u)
 
-        s = 0.5
+        s = 0.5d0
         w = s**3 + s
         ref = T2(0.5**3+0.5,3*0.5**2 + 1,6*0.5) !, 6, 0)
         call testResult_av2('T2 => x**3 + x',ref,w)
@@ -61,10 +61,10 @@ program utest
         ref = T3(0.5*sin(1.0),cos(1.0),-2*sin(1.0),-4*cos(1.0)) !,8*sin(1.0d0))
         call testResult_av3('T3 => sin(x)*cos(x)',ref,w)
 
-        u = 0.5*sin(2*a)
+        u = 0.5d0*sin(2.0d0*a)
         call testResult_av3('T3 => 0.5*sin(2x)',ref,u)
 
-        s = 0.5
+        s = 0.5d0
         w = s**3 + s
         ref = T3(0.5**3+0.5,3*0.5**2 + 1,6*0.5, 6)
         call testResult_av3('T3 => x**3 + x',ref,w)
@@ -94,10 +94,10 @@ program utest
         ref = T4(0.5*sin(1.0),cos(1.0),-2*sin(1.0),-4*cos(1.0),8*sin(1.0))
         call testResult_av4('T4 => sin(x)*cos(x)',ref,w)
 
-        u = 0.5*sin(2*a)
+        u = 0.5d0*sin(2.0d0*a)
         call testResult_av4('T4 => 0.5*sin(2x)',ref,u)
 
-        s = 0.5
+        s = 0.5d0
         w = s**3 + s
         ref = T4(0.5**3+0.5,3*0.5**2 + 1,6*0.5, 6, 0)
         call testResult_av4('T4 => x**3 + x',ref,w)
@@ -142,11 +142,11 @@ program utest
         ref = T4(t*y,1+log(2.0)+log(t),1/t,-1/t**2,2/t**3)
         call testResult_av4('T4 => x*log(2x)',ref,w)
 
-        u = 0.5*sinh(2*a)
+        u = 0.5d0*sinh(2.0d0*a)
         ref = T4(0.5*sinh(1.0),cosh(1.0),2*sinh(1.0),4*cosh(1.0),8*sinh(1.0))
         call testResult_av4('T4 => 0.5*sinh(2x)',ref,u)
 
-        u = 0.5*cosh(2*a)
+        u = 0.5d0*cosh(2.0d0*a)
         ref = T4(0.5*cosh(1.0),sinh(1.0),2*cosh(1.0),4*sinh(1.0),8*cosh(1.0))
         call testResult_av4('T4 => 0.5*cosh(2x)',ref,u)
 
