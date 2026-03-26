@@ -1,55 +1,71 @@
-.PHONY: all clean help run
+.PHONY: all clean veryclean help test
 
-ifdef release
-    OBJ_DIR_SUFF := _release
+# Compiler selection (default: gfortran)
+F ?= gfortran
+
+# Build type: use 'make debug=1' for debug build
+ifdef debug
+  BUILD := debug
+  EXT   := _d
 else
-    OBJ_DIR_SUFF := _debug
+  BUILD := release
+  EXT   :=
 endif
 
-ifdef intel
-    ODIR := obj_intel$(OBJ_DIR_SUFF)
-    F90 := ifort
-    F90_OPTS := -fPIC -fpp -r8 -module $(ODIR)
-    ifdef release
-        F90_OPTS_EXTRA := #-fp-model precise -fprotect-parens -xHost -prec-sqrt -qopenmp-simd -qopenmp -stand f08
-        F90_OPTS += -O3 $(F90_OPTS_EXTRA) -warn all
-        ARCH_NAME := build-intel-release.tgz
-    else
-        F90_OPTS += -D_DEBUG -g -check bounds -warn all -debug-parameters used -traceback
-        ARCH_NAME := build-intel-debug.tgz
-    endif
-    LINK_OPTS := -static-intel
+# --- Compiler-specific settings ---
+
+ifeq ($(F),ifx)
+  ODIR     := obj_intel_$(BUILD)
+  MOD_OPTS := -module $(ODIR) -I$(ODIR)
+  F_BASE   := -stand f23 -fPIC -fpp -r8
+  ifdef debug
+    F_BUILD := -g -debug-parameters -O0 -check all -warn all
+  else
+    F_BUILD := -O3 -fp-model precise -fprotect-parens -xHost -warn all
+  endif
+  F_LOPTS  :=
 else
-    ODIR := obj_gfortran$(OBJ_DIR_SUFF)
-    F90 := gfortran
-    F90_OPTS := -fPIC -cpp -std=f2018 -fimplicit-none -fdefault-real-8 -ffree-line-length-200 -Wall -Wextra -J$(ODIR)
-    ifdef release
-        F90_OPTS += -O3
-        ARCH_NAME := build-gfortran-release.tgz
-    else
-        F90_OPTS += -D_DEBUG -W -ggdb -fbounds-check -ffpe-trap=denormal,invalid
-        ARCH_NAME := build-gfortran-debug.tgz
-    endif
-    LINK_OPTS :=
+  ODIR     := obj_$(F)_$(BUILD)
+  MOD_OPTS := -J$(ODIR) -I$(ODIR)
+  F_BASE   := -fPIC -cpp -fimplicit-none -fdefault-real-8 -ffree-line-length-200 -Wall -Wextra
+  ifdef debug
+    F_BUILD := -ggdb -fbounds-check -ffpe-trap=denormal,invalid
+  else
+    F_BUILD := -O3
+  endif
+  F_LOPTS  :=
 endif
 
-all: $(ODIR) avd
+F_OPTS  := $(F_BASE) $(F_BUILD) $(MOD_OPTS)
+LIB     := $(ODIR)/libavd.a
 
-debug: avd
-	gdb avd -x gdb_comm
+SRC     := src/avd.f90 src/avd_sm.f90 src/avd_functions.f90
+OBJ     := $(SRC:src/%.f90=$(ODIR)/%.o)
 
-run: avd
-	avd
+all: $(LIB)
 
-avd: $(ODIR) avd.f90 avd_sm.f90 av_utest.f90 Makefile
-	$(F90) $(F90_OPTS) avd.f90 avd_sm.f90 av_utest.f90 -o $@
+test: $(LIB) test/av_utest.f90 | $(ODIR)
+	$(F) $(F_OPTS) -o av_utest$(EXT) test/av_utest.f90 $(LIB) $(F_LOPTS)
+	./av_utest$(EXT)
+
+$(LIB): $(OBJ) | $(ODIR)
+	ar crv $@ $^
+
+$(ODIR)/%.o: src/%.f90 | $(ODIR)
+	$(F) -c $(F_OPTS) -o $@ $<
 
 $(ODIR):
-	mkdir -p $(ODIR)
+	mkdir -p $@
 
 clean:
-	@rm -vrf $(ODIR) *~ $(ARCH_NAME) *.{mod,smod,o} avd
-	
+	@rm -vf $(ODIR)/*.o $(ODIR)/*.mod $(ODIR)/*.smod *~
+
+veryclean: clean
+	@rm -vf $(LIB) av_utest$(EXT)
+	@rm -vfr $(ODIR)
+
 help:
-	@echo "SRC = $(SRC)"
-	@echo "OBJ = $(OBJ)"
+	@echo "Targets : all, test, clean, veryclean"
+	@echo "Options : F=gfortran|ifx  debug=1"
+	@echo "ODIR    = $(ODIR)"
+	@echo "F_OPTS  = $(F_OPTS)"
