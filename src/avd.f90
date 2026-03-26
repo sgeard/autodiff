@@ -19,14 +19,14 @@ module AVD
     integer, parameter, private :: sqrt_f  = 13
 
     abstract interface
-        pure function gen(x) result(r)
+        pure function gen_f(x) result(r)
             real(8) :: r
             real(8), intent(in) :: x
-        end function gen
+        end function gen_f
     end interface
 
     type f_map_t
-        procedure(gen), nopass, pointer :: f_ptr => null()
+        procedure(gen_f), nopass, pointer :: f_ptr => null()
     end type f_map_t
     type(f_map_t), target :: f_map(0:4,13)
 
@@ -736,7 +736,7 @@ contains
         integer, intent(in)      :: ft
         type(avd_d1), intent(in) :: av
 
-        procedure(gen), pointer :: f1
+        procedure(gen_f), pointer :: f1
         r%avd_b = Q0_f(ft, avd_b(av%v))
         f1 => f_map(1,ft)%f_ptr
         associate(g1=>av%d1, x=>av%v)
@@ -749,7 +749,7 @@ contains
         integer, intent(in)      :: ft
         type(avd_d2), intent(in) :: av
 
-        procedure(gen), pointer :: f1, f2
+        procedure(gen_f), pointer :: f1, f2
         r%avd_d1 = Q1_f(ft, avd_d1(av%v, av%d1))
         f1 => f_map(1,ft)%f_ptr
         f2 => f_map(2,ft)%f_ptr
@@ -763,7 +763,7 @@ contains
         integer, intent(in)      :: ft
         type(avd_d3), intent(in) :: av
 
-        procedure(gen), pointer :: f1, f2, f3
+        procedure(gen_f), pointer :: f1, f2, f3
         r%avd_d2 = Q2_f(ft, avd_d2(av%v, av%d1, av%d2))
         f1 => f_map(1,ft)%f_ptr
         f2 => f_map(2,ft)%f_ptr
@@ -778,7 +778,7 @@ contains
         integer, intent(in)      :: ft
         type(avd_d4), intent(in) :: av
 
-        procedure(gen), pointer :: f1, f2, f3, f4
+        procedure(gen_f), pointer :: f1, f2, f3, f4
         r%avd_d3 = Q3_f(ft, avd_d3(av%v, av%d1, av%d2, av%d3))
         f1 => f_map(1,ft)%f_ptr
         f2 => f_map(2,ft)%f_ptr
