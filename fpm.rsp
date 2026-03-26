@@ -1,0 +1,19 @@
+@build
+> Building with ifx
+options build --compiler ifx --flag "-stand f23"
+###############################
+@build_debug
+> Building with ifx (debug)
+options build --compiler ifx --flag "-stand f23 -g -debug-parameters -O0 -check all"
+###############################
+@test
+> Running tests with ifx
+options test --compiler ifx --flag "-stand f23"
+###############################
+@clean
+> Removing objects and libraries
+options clean --skip
+###############################
+@veryclean
+> Removing all objects and dependencies
+options clean --all

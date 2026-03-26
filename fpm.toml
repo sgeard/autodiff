@@ -7,7 +7,7 @@ copyright = "Copyright 2020, sgeard"
 
 [build]
    auto-executables = false
-   auto-tests = false
+   auto-tests = true
    auto-examples = false
    module-naming = false
 

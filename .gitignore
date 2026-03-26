@@ -1,0 +1,4 @@
+build/
+obj_*/
+avd
+avd_d
