@@ -1,16 +1,26 @@
 .PHONY: all clean veryclean help test
+.DEFAULT_GOAL := all
 
-F_EXTRA_GF  := -fPIC -fimplicit-none -fdefault-real-8 -ffree-line-length-200 -Wextra
-F_EXTRA_IFX := -fPIC -r8
+F_EXTRA_GF  := -fPIC -fimplicit-none -ffree-line-length-200 -Wextra
+F_EXTRA_IFX := -fPIC
 
-foptions.mk: generate_fopts.tcl
-	tclsh9.1 $<
+# --- Compiler selection: default ifx (release), validated ------------------
+F ?= ifx
+VALID_F := gfortran ifx lfortran flang
+ifeq ($(filter $(F),$(VALID_F)),)
+  $(error Unknown Fortran compiler 'F=$(F)' -- choose one of: $(VALID_F))
+endif
 
-include foptions.mk
+# Canonical compiler options, generated into foptions_$(F).mk by generate_fopts.tcl
+OPTIONS_FNAME := foptions_$(F).mk
+$(OPTIONS_FNAME): generate_fopts.tcl
+	tclsh generate_fopts.tcl $(F) $(OPTIONS_FNAME)
+
+-include $(OPTIONS_FNAME)
 
 LIB     := $(ODIR)/libavd.a
 
-all: foptions.mk $(LIB)
+all: $(OPTIONS_FNAME) $(LIB)
 
 SRC     := src/avd.f90 src/avd_sm.f90 src/avd_functions.f90
 OBJ     := $(SRC:src/%.f90=$(ODIR)/%.o)
@@ -29,7 +39,7 @@ $(ODIR):
 	mkdir -p $@
 
 clean:
-	@rm -vf $(ODIR)/*.o $(ODIR)/*.mod $(ODIR)/*.smod *~
+	@rm -vf $(ODIR)/*.o $(ODIR)/*.mod $(ODIR)/*.smod *~ foptions_*.mk
 
 veryclean: clean
 	@rm -vf $(LIB) av_utest$(EXT)
@@ -37,6 +47,6 @@ veryclean: clean
 
 help:
 	@echo "Targets : all, test, clean, veryclean"
-	@echo "Options : F=gfortran|ifx  debug=1"
+	@echo "Options : F=gfortran|ifx|lfortran|flang (default ifx)  debug=1"
 	@echo "ODIR    = $(ODIR)"
 	@echo "F_OPTS  = $(F_OPTS)"
