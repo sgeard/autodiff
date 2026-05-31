@@ -31,7 +31,7 @@ F_LOPTS  := -static-intel -Wl,-z,noexecstack $(F_LOPTS_IFX)
 
 dict set c lfortran {
 ODIR     := obj_lf_$(BUILD)
-MOD_OPTS :=
+MOD_OPTS := -J$(ODIR) -I$(ODIR)
 F_BASE   := --cpp --generate-object-code $(F_EXTRA_LF)
 ifdef debug
     F_BUILD := -g

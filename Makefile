@@ -1,4 +1,4 @@
-.PHONY: all clean veryclean help test
+.PHONY: all clean veryclean distclean help test
 .DEFAULT_GOAL := all
 
 F_EXTRA_GF  := -fPIC -fimplicit-none -ffree-line-length-200 -Wextra
@@ -39,14 +39,16 @@ $(ODIR):
 	mkdir -p $@
 
 clean:
-	@rm -vf $(ODIR)/*.o $(ODIR)/*.mod $(ODIR)/*.smod *~ foptions_*.mk
+	@rm -vf $(ODIR)/*.o $(ODIR)/*.mod $(ODIR)/*.smod *~ *.mod *.smod *.o $(LIB) av_utest$(EXT) $(OPTIONS_FNAME)
 
 veryclean: clean
-	@rm -vf $(LIB) av_utest$(EXT)
-	@rm -vfr $(ODIR)
+	@rm -vfr obj_*
+
+distclean: veryclean
+	@rm -vf foptions_*.mk *~
 
 help:
-	@echo "Targets : all, test, clean, veryclean"
+	@echo "Targets : all, test, clean, veryclean, distclean"
 	@echo "Options : F=gfortran|ifx|lfortran|flang (default ifx)  debug=1"
 	@echo "ODIR    = $(ODIR)"
 	@echo "F_OPTS  = $(F_OPTS)"
